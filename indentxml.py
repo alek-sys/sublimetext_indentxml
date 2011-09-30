@@ -7,9 +7,6 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
     	view = self.view
         for region in view.sel():  
             if not region.empty():  
-                # Get the selected text  
                 s = view.substr(region)  
-                # Transform it via rot13  
                 s = parseString(s).toprettyxml()
-                # Replace the selection with transformed text  
                 view.replace(edit, region, s)
