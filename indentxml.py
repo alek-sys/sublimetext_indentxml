@@ -79,4 +79,3 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
                 s = view.substr(region)  
                 s = parseString(s).toprettyxml()
                 view.replace(edit, region, s)
-                print xml.dom.minidom.__file__
