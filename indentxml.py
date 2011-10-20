@@ -1,4 +1,4 @@
-import sublime, sublime_plugin
+import sublime, sublime_plugin, string
 from xml.dom.minidom import *
 
 class IndentxmlCommand(sublime_plugin.TextCommand):
@@ -8,4 +8,5 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
             if not region.empty():  
                 s = view.substr(region)  
                 s = parseString(s).toprettyxml()
+                s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
                 view.replace(edit, region, s)
