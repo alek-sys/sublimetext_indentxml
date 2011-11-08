@@ -7,7 +7,9 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
         for region in view.sel():
             if not region.empty():
                 s = view.substr(region)
-                s = parseString(s.encode('utf-8')).toprettyxml()
+                s = s.encode('utf-8')
+                s = re.compile('>\s+([^\s])', re.DOTALL).sub('>\g<1>', s)
+                s = parseString(s).toprettyxml()
                 text_re = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
                 s = text_re.sub('>\g<1></', s)
                 s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
