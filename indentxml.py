@@ -7,10 +7,15 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
         for region in view.sel():
             if not region.empty():
                 s = view.substr(region)
-                s = s.encode('utf-8')
+                # convert to plain string without indents and spaces
                 s = re.compile('>\s+([^\s])', re.DOTALL).sub('>\g<1>', s)
+                # replace tags to convince minidom process cdata as text
+                s = s.replace('<![CDATA[', '%CDATAESTART%').replace(']]>', '%CDATAEEND%') 
                 s = parseString(s).toprettyxml()
-                text_re = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
-                s = text_re.sub('>\g<1></', s)
+                # remove line breaks
+                s = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL).sub('>\g<1></', s)
+                # restore cdata
+                s = s.replace('%CDATAESTART%', '<![CDATA[').replace('%CDATAEEND%', ']]>')
+                # remove xml header
                 s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
                 view.replace(edit, region, s)
