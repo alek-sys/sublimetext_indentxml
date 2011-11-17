@@ -1,0 +1,3 @@
+[
+	{ "keys": ["super+k", "super+f"], "command": "indentxml" }
+]
