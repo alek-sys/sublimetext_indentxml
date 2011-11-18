@@ -1,0 +1,20 @@
+[
+    {
+        "id": "selection",
+        "caption": "Selection",
+        "children":
+        [
+            {
+                "id": "format",
+                "caption": "Format",
+                "children":
+                [
+                    {
+                        "caption": "Indent XML",
+                        "command": "indentxml"
+                    }
+                ]
+            }
+        ]
+    }
+]
