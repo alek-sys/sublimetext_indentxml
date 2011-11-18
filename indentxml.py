@@ -1,8 +1,33 @@
-import sublime, sublime_plugin, re
+import sublime
+import sublime_plugin
+import re
 from xml.dom.minidom import *
+from os.path import basename
 
 class IndentxmlCommand(sublime_plugin.TextCommand):
-    def run(self, edit):  
+    def is_enabled(self):
+        """
+        Enables or disables the 'indentxml' command.
+        Command will be disabled if there are currently no text selections and current file is not 'XML' or 'Plain Text'.
+        This helps clarify to the user about when the command can be executed, especially useful for UI controls.
+        """
+        window = sublime.active_window()
+        if window == None:
+            return False
+        view = window.active_view()
+        if view == None:
+            return False
+        regionset = view.sel()
+        if len(regionset) == 0 or len(regionset[0]) == 0:
+            return False
+        syntax = view.settings().get('syntax')
+        language = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
+        return ((language == "xml") or (language == "plain text"))
+
+    def run(self, edit):
+        """
+        Main plugin logic for the 'indentxml' command.
+        """
         view = self.view
         for region in view.sel():
             if not region.empty():
