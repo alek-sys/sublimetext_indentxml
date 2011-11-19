@@ -11,10 +11,7 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
         Command will be disabled if there are currently no text selections and current file is not 'XML' or 'Plain Text'.
         This helps clarify to the user about when the command can be executed, especially useful for UI controls.
         """
-        window = sublime.active_window()
-        if window == None:
-            return False
-        view = window.active_view()
+        view = self.view
         if view == None:
             return False
         regionset = view.sel()
