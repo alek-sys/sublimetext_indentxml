@@ -38,6 +38,8 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
                 view.replace(edit, alltextreg, s)
 
     def indentxml(self, s):
+        # convert to utf
+        s = s.encode("utf-8")
         # convert to plain string without indents and spaces
         s = re.compile('>\s+([^\s])', re.DOTALL).sub('>\g<1>', s)
         # replace tags to convince minidom process cdata as text
