@@ -37,9 +37,10 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
                 s = self.indentxml(s)
                 view.replace(edit, alltextreg, s)
 
-    def indentxml(self, s):
+    def indentxml(self, s):                
         # convert to utf
-        s = s.encode("utf-8")
+        s = s.encode("utf-8") 
+        xmlheader = re.compile("<\?.*\?>").match(s)
         # convert to plain string without indents and spaces
         s = re.compile('>\s+([^\s])', re.DOTALL).sub('>\g<1>', s)
         # replace tags to convince minidom process cdata as text
@@ -51,4 +52,6 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
         s = s.replace('%CDATAESTART%', '<![CDATA[').replace('%CDATAEEND%', ']]>')
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
+        if xmlheader: 
+                s = xmlheader.group() + "\n" + s
         return s
