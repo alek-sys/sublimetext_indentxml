@@ -1,6 +1,7 @@
 import sublime
 import sublime_plugin
 import re
+import threading
 from xml.dom.minidom import *
 from os.path import basename
 
@@ -29,13 +30,32 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
                 for region in view.sel():
                     if not region.empty():
                         s = view.substr(region)
-                        s = self.indentxml(s)
-                        view.replace(edit, region, s)
+                        t = IndentThread(s)
+                        t.start()
+                        self.handle(t, lambda result: view.replace(edit, region, result))
         else:   #format all text
                 alltextreg = sublime.Region(0, view.size())
                 s = view.substr(alltextreg)
-                s = self.indentxml(s)
-                view.replace(edit, alltextreg, s)
+                t = IndentThread(s)
+                t.start()
+                self.handle(t, lambda result: view.replace(edit, alltextreg, result))
+
+    def handle(self, thread, callback, progress=3):
+        if thread.is_alive():
+            # Update the status bar with progress dots
+            self.view.set_status('indentxml', 'XML Indenting%s' % ('.' * (progress % 3 + 1)) )
+            sublime.set_timeout(lambda: self.handle(thread, callback, progress + 1), 100)
+        else:
+            callback(thread.result)
+            self.view.erase_status('indentxml')
+
+class IndentThread(threading.Thread):
+    def __init__(self, s):
+        self.s = s
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.result = self.indentxml(self.s)
 
     def indentxml(self, s):                
         # convert to utf
