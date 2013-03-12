@@ -40,11 +40,11 @@ class IndentxmlCommand(sublime_plugin.TextCommand):
     def indentxml(self, s):                
         # convert to utf
         s = s.encode("utf-8") 
-        xmlheader = re.compile("<\?.*\?>").match(s)
+        xmlheader = re.compile(b"<\?.*\?>").match(s)
         # convert to plain string without indents and spaces
-        s = re.compile('>\s+([^\s])', re.DOTALL).sub('>\g<1>', s)
+        s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
         # replace tags to convince minidom process cdata as text
-        s = s.replace('<![CDATA[', '%CDATAESTART%').replace(']]>', '%CDATAEEND%') 
+        s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%') 
         s = parseString(s).toprettyxml()
         # remove line breaks
         s = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL).sub('>\g<1></', s)
