@@ -57,10 +57,10 @@ class AutoIndentCommand(BaseIndentCommand):
             return 'xml'
         if language == 'json':
             return 'json'
-        if language == 'plain text':
+        if language == 'plain text' and s:
             if s[0] == '<':
                 return 'xml'
-            if s[0] == '{':
+            if s[0] == '{' or s[0] == '[':
                 return 'json'
 
         return 'notsupported'
@@ -78,6 +78,7 @@ class AutoIndentCommand(BaseIndentCommand):
 
     def check_enabled(self, lang):
         return True
+
 
 class IndentXmlCommand(BaseIndentCommand):
     def indent(self, s):                
