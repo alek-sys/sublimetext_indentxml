@@ -58,9 +58,9 @@ class AutoIndentCommand(BaseIndentCommand):
         if language == 'json':
             return 'json'
         if language == 'plain text':
-            if (s[0] == '<'):
+            if s[0] == '<':
                 return 'xml'
-            else:
+            if s[0] == '{':
                 return 'json'
 
         return 'notsupported'
