@@ -4,7 +4,7 @@ import re
 import json
 from xml.dom.minidom import *
 from os.path import basename
-
+from threading import Thread;
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
     def __init__(self, view):
@@ -41,13 +41,27 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
                 for region in view.sel():
                     if not region.empty():
                         s = view.substr(region)
-                        s = self.indent(s)
-                        view.replace(edit, region, s)
+                        t = self.get_formatter(s)
+                        t.start()
+                        self.handle(t, lambda result: view.replace(edit, region, result))
+                        # view.replace(edit, region, s)
         else:   #format all text
                 alltextreg = sublime.Region(0, view.size())
                 s = view.substr(alltextreg)
-                s = self.indent(s)
-                view.replace(edit, alltextreg, s)
+                t = self.get_formatter(s)
+                t.start()
+                self.handle(t, lambda result: view.replace(edit, alltextreg, result))
+                # s = self.indent(s)                
+                # view.replace(edit, alltextreg, s)   
+
+    def handle(self, thread, callback, progress=3):
+        if thread.is_alive():
+            # Update the status bar with progress dots
+            self.view.set_status('indentxml', 'XML Indenting%s' % ('.' * (progress % 3 + 1)) )
+            sublime.set_timeout(lambda: self.handle(thread, callback, progress + 1), 100)
+        else:
+            callback(thread.result)
+            self.view.erase_status('indentxml')
 
 
 class AutoIndentCommand(BaseIndentCommand):
@@ -65,23 +79,44 @@ class AutoIndentCommand(BaseIndentCommand):
 
         return 'notsupported'
 
-    def indent(self, s):
+    def get_formatter(self, s):
         text_type = self.get_text_type(s)
         if text_type == 'xml':
-            command = IndentXmlCommand(self.view)
+            return XmlFormatter(s)
         if text_type == 'json':
-            command = IndentJsonCommand(self.view)
-        if text_type == 'notsupported':
-            return s
-        
-        return command.indent(s)
+            return JsonFormatter(s)
 
-    def check_enabled(self, lang):
+        raise Exception("Not supported format")
+
+    def check_enabled(sellf, lang):
         return True
 
 
 class IndentXmlCommand(BaseIndentCommand):
-    def indent(self, s):                
+    def check_enabled(self, language):
+        return ((language == "xml") or (language == "plain text"))
+
+    def get_formatter(self, s):
+        return XmlFormatter(s)
+
+class IndentJsonCommand(BaseIndentCommand):
+    def check_enabled(self, language):
+        return ((language == "json") or (language == "plain text"))
+
+    def get_formatter(self, s):
+        return JsonFormatter(s)
+
+class BaseFormatter(Thread):
+    def __init__(self, source):  
+        self.source = source
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.result = self.indent(self.source)
+
+
+class XmlFormatter(BaseFormatter):
+    def indent(self, s):        
         # convert to utf
         s = s.encode("utf-8") 
         xmlheader = re.compile(b"<\?.*\?>").match(s)
@@ -100,14 +135,7 @@ class IndentXmlCommand(BaseIndentCommand):
                 s = xmlheader.group() + "\n" + s
         return s
 
-    def check_enabled(self, language):
-        return ((language == "xml") or (language == "plain text"))
-
-
-class IndentJsonCommand(BaseIndentCommand):
-    def check_enabled(self, language):
-        return ((language == "json") or (language == "plain text"))
-
+class JsonFormatter(BaseFormatter):
     def indent(self, s):
         parsed = json.loads(s)
         return json.dumps(parsed, sort_keys=True, indent=4, separators=(',', ': '))
