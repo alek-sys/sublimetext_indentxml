@@ -40,12 +40,12 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
         if len(regions) > 1 or not regions[0].empty():
                 for region in view.sel():
                     if not region.empty():
-                        s = view.substr(region)
+                        s = view.substr(region).strip()
                         s = self.indent(s)
                         view.replace(edit, region, s)
         else:   #format all text
                 alltextreg = sublime.Region(0, view.size())
-                s = view.substr(alltextreg)
+                s = view.substr(alltextreg).strip()
                 s = self.indent(s)
                 view.replace(edit, alltextreg, s)
 
