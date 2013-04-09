@@ -11,7 +11,7 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
         self.view = view
         self.language = self.get_language()
 
-    def get_language(self):        
+    def get_language(self):
         syntax = self.view.settings().get('syntax')
         language = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
         return language
@@ -52,7 +52,7 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
 
 class AutoIndentCommand(BaseIndentCommand):
     def get_text_type(self, s):
-        language =  self.language 
+        language =  self.language
         if language == 'xml':
             return 'xml'
         if language == 'json':
@@ -73,7 +73,7 @@ class AutoIndentCommand(BaseIndentCommand):
             command = IndentJsonCommand(self.view)
         if text_type == 'notsupported':
             return s
-        
+
         return command.indent(s)
 
     def check_enabled(self, lang):
@@ -81,14 +81,14 @@ class AutoIndentCommand(BaseIndentCommand):
 
 
 class IndentXmlCommand(BaseIndentCommand):
-    def indent(self, s):                
+    def indent(self, s):
         # convert to utf
-        s = s.encode("utf-8") 
+        s = s.encode("utf-8")
         xmlheader = re.compile(b"<\?.*\?>").match(s)
         # convert to plain string without indents and spaces
         s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
         # replace tags to convince minidom process cdata as text
-        s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%') 
+        s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%')
         s = parseString(s).toprettyxml()
         # remove line breaks
         s = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL).sub('>\g<1></', s)
@@ -96,8 +96,8 @@ class IndentXmlCommand(BaseIndentCommand):
         s = s.replace('%CDATAESTART%', '<![CDATA[').replace('%CDATAEEND%', ']]>')
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
-        if xmlheader: 
-                s = xmlheader.group() + "\n" + s
+        if xmlheader:
+                s = xmlheader.group().decode() + "\n" + s
         return s
 
     def check_enabled(self, language):
