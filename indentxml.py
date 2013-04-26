@@ -4,6 +4,8 @@ import re
 import json
 from xml.dom.minidom import *
 from os.path import basename
+from copy import copy
+from xml.sax.saxutils import escape, unescape
 
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
@@ -80,6 +82,37 @@ class AutoIndentCommand(BaseIndentCommand):
         return True
 
 
+def transform_wrapped_content(
+        s, wrap_start, wrap_end,
+        wrap_start_new, wrap_end_new, transformer):
+    """
+    Transforms any content between the occurrences of
+    wrap_start and wrap_end strings using the transformer function.
+    It'll be passed the string and should
+    return the transformed string.
+    The transformed string is then reinserted into the main string
+    with the wrap_start and wrap_end replaced with wrap_start_new and
+    wrap_end_new.
+    """
+    org_s = copy(s)
+    loc = s.find(wrap_start)
+    while loc != -1:
+        eloc = s.find(wrap_end, loc)
+        # if we can't find an end wrap for a start wrap,
+        # we don't alter the input string at all.
+        if eloc == -1:
+            s = org_s
+            break
+        sub_s = transformer(s[loc + len(wrap_start): eloc])
+        s = '%s%s%s%s%s' % (
+            s[:loc], wrap_start_new, sub_s,
+            wrap_end_new, s[eloc + len(wrap_end):])
+        loc = s.find(
+            wrap_start,
+            loc + len(wrap_start_new) + len(sub_s) + len(wrap_end_new))
+    return s
+
+
 class IndentXmlCommand(BaseIndentCommand):
     def indent(self, s):                
         # convert to utf
@@ -88,12 +121,16 @@ class IndentXmlCommand(BaseIndentCommand):
         # convert to plain string without indents and spaces
         s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
         # replace tags to convince minidom process cdata as text
-        s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%') 
+        s = transform_wrapped_content(
+            s, '<![CDATA[', ']]>',
+            '%CDATAESTART%', '%CDATAEEND%', escape)
         s = parseString(s).toprettyxml()
         # remove line breaks
         s = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL).sub('>\g<1></', s)
         # restore cdata
-        s = s.replace('%CDATAESTART%', '<![CDATA[').replace('%CDATAEEND%', ']]>')
+        s = transform_wrapped_content(
+            s, '%CDATAESTART%', '%CDATAEEND%',
+            '<![CDATA[', ']]>', unescape)
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
         if xmlheader: 
