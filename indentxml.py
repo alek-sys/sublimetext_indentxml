@@ -85,19 +85,28 @@ class IndentXmlCommand(BaseIndentCommand):
         # convert to utf
         s = s.encode("utf-8") 
         xmlheader = re.compile(b"<\?.*\?>").match(s)
-        # convert to plain string without indents and spaces
-        s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
-        # replace tags to convince minidom process cdata as text
-        s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%') 
+
+        # storing cdata to restore it later
+        cdataPattern = re.compile(b"<!\[CDATA\[.*?\]\]>", re.S)
+        cdataList = cdataPattern.findall(s)
+        cdataPlaceholder = b"$cdata_placeholder$"
+        s = cdataPattern.sub(cdataPlaceholder, s)
+
         s = parseString(s).toprettyxml()
-        # remove line breaks
-        s = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL).sub('>\g<1></', s)
-        # restore cdata
-        s = s.replace('%CDATAESTART%', '<![CDATA[').replace('%CDATAEEND%', ']]>')
+
+        # removing spaces, tabs, new lines from the beginning and end of text elements
+        s = re.compile("(?<=>)\s*([^<\s]+(\s+[^<\s]+)*)\s*(?=<)", re.S).sub("\g<1>", s)
+        # removing empty lines
+        s = re.compile("\n\s*\n").sub("\n", s)
+
+        # restoring cdata
+        for cdata in cdataList:
+            s = s.replace(cdataPlaceholder.decode(), cdata, 1)
+
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
         if xmlheader: 
-                s = xmlheader.group() + "\n" + s
+            s = xmlheader.group().decode() + "\n" + s
         return s
 
     def check_enabled(self, language):
