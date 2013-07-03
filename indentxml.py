@@ -13,9 +13,9 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
         self.view = view
         self.language = self.get_language()
 
-    def get_language(self):        
+    def get_language(self):
         syntax = self.view.settings().get('syntax')
-        language = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
+        language = basename(syntax).replace('.tmLanguage', '').lower() if syntax is not None else "plain text"
         return language
 
     def check_enabled(self, lang):
@@ -27,7 +27,7 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
         Command will be disabled if there are currently no text selections and current file is not 'XML' or 'Plain Text'.
         This helps clarify to the user about when the command can be executed, especially useful for UI controls.
         """
-        if self.view == None:
+        if self.view is None:
             return False
 
         return self.check_enabled(self.get_language())
@@ -45,7 +45,7 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
                         s = view.substr(region).strip()
                         s = self.indent(s)
                         view.replace(edit, region, s)
-        else:   #format all text
+        else:
                 alltextreg = sublime.Region(0, view.size())
                 s = view.substr(alltextreg).strip()
                 s = self.indent(s)
@@ -54,7 +54,7 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
 
 class AutoIndentCommand(BaseIndentCommand):
     def get_text_type(self, s):
-        language =  self.language 
+        language = self.language
         if language == 'xml':
             return 'xml'
         if language == 'json':
@@ -75,7 +75,7 @@ class AutoIndentCommand(BaseIndentCommand):
             command = IndentJsonCommand(self.view)
         if text_type == 'notsupported':
             return s
-        
+
         return command.indent(s)
 
     def check_enabled(self, lang):
@@ -114,12 +114,11 @@ def transform_wrapped_content(
 
 
 class IndentXmlCommand(BaseIndentCommand):
-    def indent(self, s):                
+    def indent(self, s):
         # convert to utf
-        s = s.encode("utf-8") 
-        xmlheader = re.compile(b"<\?.*\?>").match(s)
+        xmlheader = re.compile("<\?.*\?>").match(s)
         # convert to plain string without indents and spaces
-        s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
+        s = re.compile('>\s+([^\s])', re.DOTALL).sub('>\g<1>', s)
         # replace tags to convince minidom process cdata as text
         s = transform_wrapped_content(
             s, '<![CDATA[', ']]>',
@@ -133,7 +132,7 @@ class IndentXmlCommand(BaseIndentCommand):
             '<![CDATA[', ']]>', unescape)
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
-        if xmlheader: 
+        if xmlheader:
                 s = xmlheader.group() + "\n" + s
         return s
 
