@@ -89,7 +89,11 @@ class IndentXmlCommand(BaseIndentCommand):
         s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
         # replace tags to convince minidom process cdata as text
         s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%') 
-        s = parseString(s).toprettyxml()
+        try:
+            s = parseString(s).toprettyxml()
+        except Exception, e:
+            sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
+            raise e
         # remove line breaks
         s = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL).sub('>\g<1></', s)
         # restore cdata
