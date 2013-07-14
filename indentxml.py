@@ -97,7 +97,7 @@ class IndentXmlCommand(BaseIndentCommand):
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
         if xmlheader: 
-                s = xmlheader.group() + "\n" + s
+                s = xmlheader.group().decode("utf-8") + "\n" + s 
         return s
 
     def check_enabled(self, language):
