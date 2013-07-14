@@ -91,7 +91,7 @@ class IndentXmlCommand(BaseIndentCommand):
         s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%') 
         try:
             s = parseString(s).toprettyxml()
-        except Exception, e:
+        except Exception as e:
             sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
             raise e
         # remove line breaks
