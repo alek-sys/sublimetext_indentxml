@@ -42,3 +42,6 @@ Available on [Github](https://github.com/alek-sys/sublimetext_indentxml)
 
 ## Contribution
 ...is always welcome! Same place - [Github](https://github.com/alek-sys/sublimetext_indentxml)
+
+## License
+This software is distributed under MIT license (see License.txt for details)
