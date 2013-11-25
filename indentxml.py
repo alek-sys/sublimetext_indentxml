@@ -118,11 +118,6 @@ class IndentJsonCommand(BaseIndentCommand):
         return ((language == "json") or (language == "plain text"))
 
     def indent(self, s):
-        try:
-            parsed = json.loads(s, object_pairs_hook=OrderedDict, parse_float=decimal.Decimal)
-            indented = json.dumps(parsed, sort_keys=False, indent=4, separators=(',', ': '), use_decimal=True)
-            return indented
-        except Exception:
-            import sys
-            exc = sys.exc_info()[1]
-            sublime.status_message(str(exc))
+        parsed = json.loads(s, object_pairs_hook=OrderedDict, parse_float=decimal.Decimal)
+        indented = json.dumps(parsed, sort_keys=False, indent=4, separators=(',', ': '), use_decimal=True)
+        return indented
