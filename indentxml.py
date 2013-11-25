@@ -1,12 +1,18 @@
 import sublime
 import sublime_plugin
 import re
-# import json
-import simplejson as json
 from xml.dom.minidom import *
 from os.path import basename
 import decimal
-from simplejson import OrderedDict
+
+try:
+    # python 3 / Sublime Text 3
+    from . import simplejson as json
+    from .simplejson import OrderedDict
+except (ValueError):
+    # python 2 / Sublime Text 2
+    import simplejson as json
+    from simplejson import OrderedDict
 
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
