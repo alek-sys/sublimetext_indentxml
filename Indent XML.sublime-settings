@@ -1,0 +1,5 @@
+{
+	// Integer number of spaces or "\t" for tabs
+	"json_indent" : "\t",
+	"xml_indent" : "\t"
+}

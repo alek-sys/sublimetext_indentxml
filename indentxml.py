@@ -5,6 +5,7 @@ import json
 from xml.dom.minidom import *
 from os.path import basename
 
+settings = sublime.load_settings("Indent XML.sublime-settings")
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
     def __init__(self, view):
@@ -90,7 +91,12 @@ class IndentXmlCommand(BaseIndentCommand):
         # replace tags to convince minidom process cdata as text
         s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%') 
         try:
-            s = parseString(s).toprettyxml()
+            settings_indent=settings.get("xml_indent", "\t")
+            if isinstance(settings_indent, int):
+                indent_string=''.ljust(settings_indent)
+            else:
+                indent_string=settings_indent
+            s = parseString(s).toprettyxml(indent=indent_string)
         except Exception as e:
             sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
             raise e
@@ -114,4 +120,5 @@ class IndentJsonCommand(BaseIndentCommand):
 
     def indent(self, s):
         parsed = json.loads(s)
-        return json.dumps(parsed, sort_keys=True, indent=4, separators=(',', ': '))
+        indent=settings.get("json_indent", 4)
+        return json.dumps(parsed, sort_keys=True, indent=indent, separators=(',', ': '))
