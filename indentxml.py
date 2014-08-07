@@ -120,5 +120,5 @@ class IndentJsonCommand(BaseIndentCommand):
 
     def indent(self, s):
         parsed = json.loads(s)
-        indent=settings.get("json_indent", 4)
+        indent=settings.get("json_indent", "\t")
         return json.dumps(parsed, sort_keys=True, indent=indent, separators=(',', ': '))
