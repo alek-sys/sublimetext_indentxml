@@ -42,6 +42,9 @@ Indent plugin supports both Sublime Text 2 and Sublime Text 3
 ## Usage ##
 Click on Tools->Command Pallette... (or Ctrl+shift+P if you're a keyboard guy) and then chose "Indent XML"
 
+## Settings ##
+Preferences -> Package Settings -> Indent XML
+
 ## Feedback & Support
 Available on [Github](https://github.com/alek-sys/sublimetext_indentxml)
 
