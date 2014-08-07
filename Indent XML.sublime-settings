@@ -1,5 +1,5 @@
 {
-	// Integer number of spaces or "\t" for tabs
+	// Indentation - number of spaces or "\t" for tabs
 	"json_indent" : "\t",
 	"xml_indent" : "\t"
 }
