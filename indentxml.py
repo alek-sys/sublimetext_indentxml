@@ -3,6 +3,7 @@ import sublime_plugin
 import re
 import json
 from xml.dom.minidom import *
+from xml.parsers.expat import ExpatError, errors
 from os.path import basename
 
 
@@ -91,9 +92,10 @@ class IndentXmlCommand(BaseIndentCommand):
         s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%') 
         try:
             s = parseString(s).toprettyxml()
-        except Exception as e:
-            sublime.active_window().run_command("show_panel", {"panel": "console", "toggle": True})
-            raise e
+        except ExpatError as err:
+            message = "Invalid XML: %s line:%d:col:%d" % (errors.messages[err.code], err.lineno, err.offset)
+            sublime.status_message(message)
+            return
         # remove line breaks
         s = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL).sub('>\g<1></', s)
         # restore cdata
