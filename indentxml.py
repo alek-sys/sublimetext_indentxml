@@ -53,11 +53,11 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
 class AutoIndentCommand(BaseIndentCommand):
     def get_text_type(self, s):
         language =  self.language 
-        if language == 'xml':
+        if re.search("^xml", language):
             return 'xml'
-        if language == 'json':
+        if re.search("^json", language):
             return 'json'
-        if language == 'plain text' and s:
+        if re.search("^plain text", language) and s:
             if s[0] == '<':
                 return 'xml'
             if s[0] == '{' or s[0] == '[':
