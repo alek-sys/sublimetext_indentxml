@@ -1,3 +1,3 @@
 [
-	{ "keys": ["ctrl+k", "ctrl+f"], "command": "indentxml" }
+	{ "keys": ["ctrl+k", "ctrl+f"], "command": "auto_indent" }
 ]
