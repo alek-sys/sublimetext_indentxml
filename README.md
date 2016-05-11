@@ -34,7 +34,7 @@
 Indent plugin supports both Sublime Text 2 and Sublime Text 3
 
 ## Installation
- - Just use [Package Control](http://wbond.net/sublime_packages/package_control) and search for "indentxml" plugin
+Just use [Package Control](http://wbond.net/sublime_packages/package_control) and search for "indentxml" plugin
 
 ## Usage ##
 Click on Tools->Command Pallette... (or Ctrl+shift+P if you're a keyboard guy) and then chose "Indent XML"
