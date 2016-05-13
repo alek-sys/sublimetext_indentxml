@@ -7,7 +7,7 @@ from os.path import basename, splitext
 
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
-
+  
     def __init__(self, view):
         self.view = view
         self.language = self.get_language()
@@ -86,8 +86,14 @@ class AutoIndentCommand(BaseIndentCommand):
 class IndentXmlCommand(BaseIndentCommand):
 
     def indent(self, s):
-        # convert to utf
-        s = s.encode("utf-8")
+        # figure out encoding
+        utfEncoded = s.encode("utf-8")
+        encoding = "utf-8"
+        encodingMatch = re.compile(b"<\?.*encoding=\"(.*)\".*\?>").match(utfEncoded)
+        if encodingMatch:
+            encoding = encodingMatch.group(1).decode("utf-8").lower()
+
+        s = s.encode(encoding)
         xmlheader = re.compile(b"<\?.*\?>").match(s)
         # convert to plain string without indents and spaces
         s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
@@ -105,7 +111,7 @@ class IndentXmlCommand(BaseIndentCommand):
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
         if xmlheader:
-            s = xmlheader.group().decode("utf-8") + "\n" + s
+            s = xmlheader.group().decode(encoding) + "\n" + s
         return s
 
     def check_enabled(self, language):
