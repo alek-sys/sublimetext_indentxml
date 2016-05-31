@@ -89,7 +89,7 @@ class IndentXmlCommand(BaseIndentCommand):
         # figure out encoding
         utfEncoded = s.encode("utf-8")
         encoding = "utf-8"
-        encodingMatch = re.compile(b"<\?.*encoding=\"(.*)\".*\?>").match(utfEncoded)
+        encodingMatch = re.compile(b"<\?.*encoding=\"(.*?)\".*\?>").match(utfEncoded)
         if encodingMatch:
             encoding = encodingMatch.group(1).decode("utf-8").lower()
 
