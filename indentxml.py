@@ -8,7 +8,7 @@ from os.path import basename, splitext
 
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
-  
+
     def __init__(self, view):
         self.view = view
         self.language = self.get_language()
@@ -59,6 +59,8 @@ class AutoIndentCommand(BaseIndentCommand):
         language = self.language
         if language == 'xml':
             return 'xml'
+        if language == 'nuget':
+            return 'xml'
         if language == 'json':
             return 'json'
         if language == 'plain text' and s:
@@ -72,6 +74,8 @@ class AutoIndentCommand(BaseIndentCommand):
     def indent(self, s):
         text_type = self.get_text_type(s)
         if text_type == 'xml':
+            command = IndentXmlCommand(self.view)
+        if text_type == 'nuget':
             command = IndentXmlCommand(self.view)
         if text_type == 'json':
             command = IndentJsonCommand(self.view)
@@ -117,7 +121,7 @@ class IndentXmlCommand(BaseIndentCommand):
         return s
 
     def check_enabled(self, language):
-        return ((language == "xml") or (language == "plain text"))
+        return ((language == "xml") or (language == "nuget") or (language == "plain text"))
 
 
 class IndentJsonCommand(BaseIndentCommand):
