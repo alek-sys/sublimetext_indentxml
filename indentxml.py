@@ -8,7 +8,6 @@ from os.path import basename, splitext
 
 
 class BaseIndentCommand(sublime_plugin.TextCommand):
-  
     def __init__(self, view):
         self.view = view
         self.language = self.get_language()
@@ -52,9 +51,11 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
             s = self.indent(s)
             view.replace(edit, alltextreg, s)
 
+    def indent(self, s):
+        return s
+
 
 class AutoIndentCommand(BaseIndentCommand):
-
     def get_text_type(self, s):
         language = self.language
         if language == 'xml':
@@ -85,17 +86,16 @@ class AutoIndentCommand(BaseIndentCommand):
 
 
 class IndentXmlCommand(BaseIndentCommand):
-
     def indent(self, s):
         # figure out encoding
         utfEncoded = s.encode("utf-8")
         encoding = "utf-8"
-        encodingMatch = re.compile(b"<\?.*encoding=\"(.*?)\".*\?>").match(utfEncoded)
-        if encodingMatch:
-            encoding = encodingMatch.group(1).decode("utf-8").lower()
+        encoding_match = re.compile(b"<\?.*encoding=\"(.*?)\".*\?>").match(utfEncoded)
+        if encoding_match:
+            encoding = encoding_match.group(1).decode("utf-8").lower()
 
         s = s.encode(encoding)
-        xmlheader = re.compile(b"<\?.*\?>").match(s)
+        xml_header = re.compile(b"<\?.*\?>").match(s)
         # convert to plain string without indents and spaces
         s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
         # replace tags to convince minidom process cdata as text
@@ -103,7 +103,7 @@ class IndentXmlCommand(BaseIndentCommand):
         try:
             s = parseString(s).toprettyxml()
         except ExpatError as err:
-            message = "Invalid XML: %s line:%d:col:%d" % (errors.messages[err.code], err.lineno, err.offset)
+            message = "Invalid XML: %s line:%d:col:%d" % (errors, err.lineno, err.offset)
             sublime.status_message(message)
             return
         # remove line breaks
@@ -112,18 +112,17 @@ class IndentXmlCommand(BaseIndentCommand):
         s = s.replace('%CDATAESTART%', '<![CDATA[').replace('%CDATAEEND%', ']]>')
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
-        if xmlheader:
-            s = xmlheader.group().decode(encoding) + "\n" + s
+        if xml_header:
+            s = xml_header.group().decode(encoding) + "\n" + s
         return s
 
     def check_enabled(self, language):
-        return ((language == "xml") or (language == "plain text"))
+        return (language == "xml") or (language == "plain text")
 
 
 class IndentJsonCommand(BaseIndentCommand):
-
     def check_enabled(self, language):
-        return ((language == "json") or (language == "plain text"))
+        return (language == "json") or (language == "plain text")
 
     def indent(self, s):
         parsed = json.loads(s)
