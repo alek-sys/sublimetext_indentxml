@@ -48,6 +48,10 @@ Just use [Package Control](https://packagecontrol.io/) and search for "indent xm
 
 Click on Tools->Command Pallette... (or Ctrl+shift+P if you're a keyboard guy) and then chose "Indent XML"
 
+## Settings
+
+Currently this plugin performs patching of `xml.dom.minidom.CDataSection` class in order to fix CDATA indenting in `toprettyxml` function. This can be disabled in `indent_xml.Sublime-settings` file by setting *disable_patch_minidom* to `false`.
+
 ## Feedback & Support
 
 Available on [Github](https://github.com/alek-sys/sublimetext_indentxml)
