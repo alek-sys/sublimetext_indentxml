@@ -98,8 +98,6 @@ class IndentXmlCommand(BaseIndentCommand):
         xml_header = re.compile(b"<\?.*\?>").match(s)
         # convert to plain string without indents and spaces
         s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
-        # replace tags to convince minidom process cdata as text
-        s = s.replace(b'<![CDATA[', b'%CDATAESTART%').replace(b']]>', b'%CDATAEEND%')
         try:
             s = parseString(s).toprettyxml()
         except ExpatError as err:
@@ -108,8 +106,6 @@ class IndentXmlCommand(BaseIndentCommand):
             return
         # remove line breaks
         s = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL).sub('>\g<1></', s)
-        # restore cdata
-        s = s.replace('%CDATAESTART%', '<![CDATA[').replace('%CDATAEEND%', ']]>')
         # remove xml header
         s = s.replace("<?xml version=\"1.0\" ?>", "").strip()
         if xml_header:
