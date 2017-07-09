@@ -1,5 +1,6 @@
 import os
 import re
+import io
 
 from base import IndentXmlBase
 
@@ -20,8 +21,8 @@ def setup_all_fixtures():
 
 
 def setup_fixture(input_file, output_file):
-    with open(get_fixture_filename(input_file)) as finput:
-        with open(get_fixture_filename(output_file)) as foutput:
+    with io.open(get_fixture_filename(input_file), encoding='utf8') as finput:
+        with io.open(get_fixture_filename(output_file), encoding='utf8') as foutput:
             setup_test(finput.read(), foutput.read(), input_file)
 
 
