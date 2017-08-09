@@ -50,7 +50,7 @@ Click on Tools->Command Pallette... (or Ctrl+shift+P if you're a keyboard guy) a
 
 ## Settings
 
-Currently this plugin performs patching of `xml.dom.minidom.CDataSection` class in order to fix CDATA indenting in `toprettyxml` function. This can be disabled in `indent_xml.Sublime-settings` file by setting *disable_patch_minidom* to `false`.
+Currently this plugin performs patching of `xml.dom.minidom.CDataSection` class in order to fix CDATA indenting in `toprettyxml` function. This can be disabled in `indent_xml.Sublime-settings` file by setting *disable_patch_minidom* to `true`.
 
 ## Feedback & Support
 
