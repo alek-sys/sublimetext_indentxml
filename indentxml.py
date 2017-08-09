@@ -49,7 +49,8 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
             alltextreg = sublime.Region(0, view.size())
             s = view.substr(alltextreg).strip()
             s = self.indent(s)
-            view.replace(edit, alltextreg, s)
+            if s:
+                view.replace(edit, alltextreg, s)
 
     def indent(self, s):
         return s
@@ -101,7 +102,7 @@ class IndentXmlCommand(BaseIndentCommand):
         try:
             s = parseString(s).toprettyxml()
         except ExpatError as err:
-            message = "Invalid XML: %s line:%d:col:%d" % (errors, err.lineno, err.offset)
+            message = "Invalid XML: %s line:%d:col:%d" % (errors.messages[err.code], err.lineno, err.offset)
             sublime.status_message(message)
             return
         # remove line breaks
