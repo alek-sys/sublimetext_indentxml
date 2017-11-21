@@ -46,7 +46,7 @@ Just use [Package Control](https://packagecontrol.io/) and search for "indent xm
 
 ## Usage ##
 
-Click on Tools->Command Pallette... (or Ctrl+shift+P if you're a keyboard guy) and then chose "Indent XML"
+Click on Tools->Command Pallette... (or Ctrl+shift+P if you're a keyboard person) and then chose "Indent XML"
 
 ## Settings
 
