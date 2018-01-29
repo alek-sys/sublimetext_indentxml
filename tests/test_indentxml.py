@@ -9,7 +9,9 @@ class TestBasicIndentXml(IndentXmlBase):
     pass
 
 
-fixtures_path = "/Users/alekseinesterov/dev/sublimetext_indentxml/tests/fixtures/"
+fixtures_path = os.getenv("ST_FIXTURES_PATH")
+if not fixtures_path:
+    raise Exception("To run the unit test suite set ST_FIXTURES_PATH variable to point to 'fixtures' directory")
 
 
 def setup_all_fixtures():
