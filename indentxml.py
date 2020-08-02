@@ -13,8 +13,8 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
         self.language = self.get_language()
 
     def get_language(self):
-        syntax = self.view.settings().get('syntax')
-        language = splitext(basename(syntax))[0].lower() if syntax is not None else "plain text"
+        # Top scope at the first character of the view
+        language = self.view.scope_name(0).split()[0]
         return language
 
     def check_enabled(self, lang):
@@ -59,11 +59,11 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
 class AutoIndentCommand(BaseIndentCommand):
     def get_text_type(self, s):
         language = self.language
-        if language == 'xml':
+        if language == 'text.xml':
             return 'xml'
-        if language == 'json':
+        if language == 'source.json':
             return 'json'
-        if language == 'plain text' and s:
+        if language == 'text.plain' and s:
             if s[0] == '<':
                 return 'xml'
             if s[0] == '{' or s[0] == '[':
@@ -114,12 +114,12 @@ class IndentXmlCommand(BaseIndentCommand):
         return s
 
     def check_enabled(self, language):
-        return (language == "xml") or (language == "plain text")
+        return (language == "text.xml") or (language == "text.plain")
 
 
 class IndentJsonCommand(BaseIndentCommand):
     def check_enabled(self, language):
-        return (language == "json") or (language == "plain text")
+        return (language == "source.json") or (language == "text.plain")
 
     def indent(self, s):
         parsed = json.loads(s)
