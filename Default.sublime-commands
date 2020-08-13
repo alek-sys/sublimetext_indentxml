@@ -10,5 +10,13 @@
     {
         "caption": "Indent JSON",
         "command": "indent_json"
-    }    
+    },
+    {
+        "caption": "Preferences: Indent XML Settings",
+        "command": "edit_settings",
+        "args": {
+            "base_file": "${packages}/Indent XML/indent_xml.sublime-settings",
+            "default": "// Settings in here override those in \"Indent XML/indent_xml.sublime-settings\"\n\n{\n\t$0\n}\n",
+        },
+    },
 ]

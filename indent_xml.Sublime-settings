@@ -1,3 +1,12 @@
 {
-  "disable_patch_minidom": false
+  // Currently this plugin performs patching of `xml.dom.minidom.CDataSection` class
+  // in order to fix CDATA indenting in `toprettyxml` function.
+  // This can be disabled in `indent_xml.Sublime-settings` file by setting *disable_patch_minidom* to `true`.
+  "disable_patch_minidom": false,
+
+  // Indentation - integer number of spaces
+  "json_indent": 4,
+
+  // Indentation - integer number of spaces
+  "xml_indent" : 2
 }

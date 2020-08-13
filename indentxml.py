@@ -100,7 +100,9 @@ class IndentXmlCommand(BaseIndentCommand):
         # convert to plain string without indents and spaces
         s = re.compile(b'>\s+([^\s])', re.DOTALL).sub(b'>\g<1>', s)
         try:
-            s = parseString(s).toprettyxml()
+            settings = sublime.load_settings('indent_xml.sublime-settings')
+            indent = ''.ljust(settings.get("xml_indent", 2))
+            s = parseString(s).toprettyxml(indent = indent)
         except ExpatError as err:
             message = "Invalid XML: %s line:%d:col:%d" % (errors.messages[err.code], err.lineno, err.offset)
             sublime.status_message(message)
@@ -123,4 +125,6 @@ class IndentJsonCommand(BaseIndentCommand):
 
     def indent(self, s):
         parsed = json.loads(s)
-        return json.dumps(parsed, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
+        settings = sublime.load_settings('indent_xml.sublime-settings')
+        indent = settings.get("json_indent", 4)
+        return json.dumps(parsed, sort_keys=True, indent=indent, separators=(',', ': '), ensure_ascii=False)
