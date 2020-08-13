@@ -24,5 +24,41 @@
                 ]
             }
         ]
+    },
+    {
+        "id": "preferences",
+        "children":
+        [
+            {
+                "caption": "Package Settings",
+                "mnemonic": "P",
+                "id": "package-settings",
+                "children":
+                [
+                    {
+                        "caption": "Indent XML",
+                        "children":
+                        [
+                            {
+                                "command": "edit_settings",
+                                "args": {
+                                    "base_file": "${packages}/Indent XML/indent_xml.sublime-settings",
+                                    "default": "// Settings in here override those in \"Indent XML/indent_xml.sublime-settings\"\n\n{\n\t$0\n}\n",
+                                },
+                                "caption": "Settings"
+                            },
+                            { "caption": "-" },
+                            {
+                                "command": "open_file",
+                                "args": {
+                                    "file": "${packages}/Indent XML/README.md",
+                                },
+                                "caption": "Help"
+                            },
+                        ]
+                    }
+                ]
+            }
+        ]
     }
 ]
