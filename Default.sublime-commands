@@ -4,6 +4,10 @@
         "command": "auto_indent"
     },
     {
+        "caption": "Auto unindent",
+        "command": "auto_unindent"
+    },
+    {
         "caption": "Indent XML",
         "command": "indent_xml"
     },

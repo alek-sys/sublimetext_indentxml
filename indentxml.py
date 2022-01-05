@@ -86,6 +86,14 @@ class AutoIndentCommand(BaseIndentCommand):
         return True
 
 
+class AutoUnindentCommand(BaseIndentCommand):
+    def indent(self, s):
+        # remove line breaks, spaces, and tabs outside of <> tags
+        s = re.sub('(?<=\>)(\n|\t|\s).*(?=\<)', '', s)
+
+        return s
+
+
 class IndentXmlCommand(BaseIndentCommand):
     def indent(self, s):
         # figure out encoding
