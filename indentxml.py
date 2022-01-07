@@ -55,6 +55,12 @@ class BaseIndentCommand(sublime_plugin.TextCommand):
     def indent(self, s):
         return s
 
+class AutoUnindentCommand(BaseIndentCommand):
+    def indent(self, s):
+        # remove line breaks, spaces, and tabs outside of <> tags
+        s = re.sub('(?<=\>)(\n|\t|\s).*(?=\<)', '', s)
+
+        return s
 
 class AutoIndentCommand(BaseIndentCommand):
     def get_text_type(self, s):
