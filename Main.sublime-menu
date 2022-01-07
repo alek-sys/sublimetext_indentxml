@@ -20,6 +20,18 @@
                     {
                         "caption": "Indent JSON",
                         "command": "indent_json"
+                    },
+                    {
+                        "caption": "Auto unindent",
+                        "command": "auto_unindent"
+                    },
+                    {
+                        "caption": "Unindent XML",
+                        "command": "un_indent_xml"
+                    },
+                    {
+                        "caption": "Unindent JSON",
+                        "command": "un_indent_json"
                     }
                 ]
             }
