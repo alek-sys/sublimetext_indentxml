@@ -10,6 +10,10 @@
                 "children":
                 [
                     {
+                        "caption": "Auto unindent",
+                        "command": "auto_unindent"
+                    },
+                    {
                         "caption": "Auto indent",
                         "command": "auto_indent"
                     },
