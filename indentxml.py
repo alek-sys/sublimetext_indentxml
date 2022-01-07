@@ -124,3 +124,50 @@ class IndentJsonCommand(BaseIndentCommand):
     def indent(self, s):
         parsed = json.loads(s)
         return json.dumps(parsed, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
+    
+
+class AutoUnindentCommand(BaseIndentCommand):
+    def get_text_type(self, s):
+        language = self.language
+        if language == 'xml':
+            return 'xml'
+        if language == 'json':
+            return 'json'
+        if s:
+            if s[0] == '<':
+                return 'xml'
+            if s[0] == '{' or s[0] == '[':
+                return 'json'
+
+        return 'notsupported'
+
+    def indent(self, s):
+        text_type = self.get_text_type(s)
+        if text_type == 'xml':
+            command = UnIndentXmlCommand(self.view)
+        if text_type == 'json':
+            command = UnIndentJsonCommand(self.view)
+        if text_type == 'notsupported':
+            return s
+
+        return command.indent(s)
+
+    def check_enabled(self, lang):
+        return True
+
+
+class UnIndentXmlCommand(BaseIndentCommand):
+    def indent(self, s):
+        # remove line breaks, spaces, and tabs outside of <> tags
+        s = re.sub('(?<=\>)(\n|\t|\s)*(?=\<)', '', s)
+
+        return s
+
+
+class UnIndentJsonCommand(BaseIndentCommand):
+    def indent(self, s):
+        sublime.status_message("Unindenting JSON")
+        # remove line breaks, spaces, and tabs outside of "" tags
+        s = re.sub('(((?<=\{)|(?<=\[)|(?<=\,))(\n|\t|\s)*(?=\")|(?<=\")(\n|\t|\s)*((?=\})|(?=\])))', '', s)
+
+        return s
